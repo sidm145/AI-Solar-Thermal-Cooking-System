@@ -1,0 +1,771 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Solar Thermal Cooking System — Complete Circuit Diagram</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0e1a;
+      --surface: #111827;
+      --surface2: #1a2236;
+      --border: #2a3450;
+      --text: #e2e8f0;
+      --text-dim: #8899b4;
+      --accent: #60a5fa;
+      --accent2: #a78bfa;
+      --green: #34d399;
+      --red: #f87171;
+      --orange: #fb923c;
+      --yellow: #fbbf24;
+      --pink: #f472b6;
+      --cyan: #22d3ee;
+      --solar: #facc15;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    .header {
+      text-align: center;
+      padding: 32px 20px 16px;
+      background: linear-gradient(180deg, rgba(96,165,250,0.08) 0%, transparent 100%);
+      border-bottom: 1px solid var(--border);
+    }
+    .header h1 {
+      font-size: 28px; font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+    .header p { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+
+    .legend {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 16px;
+      padding: 16px 20px; background: var(--surface); border-bottom: 1px solid var(--border);
+    }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-dim); }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .canvas-wrap { display: flex; justify-content: center; padding: 24px 12px; overflow: auto; }
+    svg text { font-family: 'JetBrains Mono', monospace; }
+
+    .tooltip {
+      position: fixed; pointer-events: none; background: var(--surface2);
+      border: 1px solid var(--accent); border-radius: 8px; padding: 10px 14px;
+      font-size: 12px; line-height: 1.5; color: var(--text);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.5); z-index: 100; opacity: 0;
+      transition: opacity 0.15s; max-width: 280px;
+    }
+    .tooltip.show { opacity: 1; }
+    .tooltip .tt-title { font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+
+    .pin-table-wrap { max-width: 1000px; margin: 0 auto; padding: 24px 20px 48px; }
+    .pin-table-wrap h2 { font-size: 18px; font-weight: 700; margin-bottom: 12px; color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; font-size: 13px; }
+    th, td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background: var(--surface2); color: var(--accent); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; }
+    td { color: var(--text); }
+    tr:hover td { background: rgba(96,165,250,0.04); }
+    td:first-child { font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--yellow); }
+
+    @keyframes flow { 0% { stroke-dashoffset: 16; } 100% { stroke-dashoffset: 0; } }
+    .wire-flow { stroke-dasharray: 8 8; animation: flow 0.8s linear infinite; }
+    @keyframes pulse-glow { 0%,100% { opacity: 0.4; } 50% { opacity: 1; } }
+    .pulse { animation: pulse-glow 2s ease-in-out infinite; }
+    @keyframes sun-rotate { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes heat-glow { 0%,100% { opacity: 0.3; filter: blur(4px); } 50% { opacity: 0.7; filter: blur(8px); } }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>☀️ Solar Thermal Cooking System</h1>
+  <p>Complete Circuit Diagram — Solar Powered · Arduino Uno · 12 V Heating Element · All Connections</p>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#facc15"></div>Solar / Battery</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#fb923c"></div>5 V Power</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#60a5fa"></div>Signal / Data</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div>I²C Bus</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#8899b4"></div>GND</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div>12 V Supply</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div>Analog Input</div>
+</div>
+
+<div class="canvas-wrap">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1400" width="1500" height="1400">
+  <defs>
+    <filter id="glow-blue"><feGaussianBlur in="SourceGraphic" stdDeviation="3"/></filter>
+    <filter id="glow-green"><feGaussianBlur in="SourceGraphic" stdDeviation="2.5"/></filter>
+    <filter id="glow-red"><feGaussianBlur in="SourceGraphic" stdDeviation="4"/></filter>
+    <filter id="glow-yellow"><feGaussianBlur in="SourceGraphic" stdDeviation="3.5"/></filter>
+    <filter id="shadow"><feDropShadow dx="0" dy="2" stdDeviation="4" flood-opacity="0.3"/></filter>
+    <marker id="arrow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#60a5fa" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-orange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#fb923c" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-red" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#f87171" stroke-width="1.2"/>
+    </marker>
+    <marker id="arrow-yellow" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L8,3 L0,6" fill="none" stroke="#facc15" stroke-width="1.2"/>
+    </marker>
+  </defs>
+
+  <!-- ============================================================ -->
+  <!--  SOLAR POWER SUPPLY CHAIN (Top Section)                      -->
+  <!-- ============================================================ -->
+
+  <!-- Section label -->
+  <rect x="30" y="18" width="280" height="24" rx="6" fill="#332b00" stroke="#facc15" stroke-width="1"/>
+  <text x="170" y="34" text-anchor="middle" fill="#facc15" font-size="10" font-weight="700">☀️  SOLAR POWER SUPPLY CHAIN</text>
+
+  <!-- ─── Solar Panel 1 ─── -->
+  <g id="solar1" data-tt="Solar Panel 1 (6V)|6V photovoltaic solar panel.|Connected in SERIES with Panel 2|to produce 12V total output.|Positive terminal connects to|Panel 2 negative terminal.">
+    <rect x="40" y="60" width="180" height="110" rx="12" fill="#111827" stroke="#facc15" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect x="40" y="60" width="180" height="110" rx="12" fill="none" stroke="#facc15" stroke-width="1" opacity="0.2" filter="url(#glow-yellow)"/>
+    <!-- Solar cell grid -->
+    <rect x="58" y="78" width="64" height="36" rx="3" fill="#1a1a00" stroke="#facc1580" stroke-width="0.8"/>
+    <line x1="78" y1="78" x2="78" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="98" y1="78" x2="98" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="58" y1="92" x2="122" y2="92" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="58" y1="104" x2="122" y2="104" stroke="#facc1540" stroke-width="0.5"/>
+    <rect x="138" y="78" width="64" height="36" rx="3" fill="#1a1a00" stroke="#facc1580" stroke-width="0.8"/>
+    <line x1="158" y1="78" x2="158" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="178" y1="78" x2="178" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="138" y1="92" x2="202" y2="92" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="138" y1="104" x2="202" y2="104" stroke="#facc1540" stroke-width="0.5"/>
+    <text x="130" y="136" text-anchor="middle" fill="#facc15" font-size="14" font-weight="800">SOLAR PANEL 1</text>
+    <text x="130" y="152" text-anchor="middle" fill="#64748b" font-size="10" font-weight="600">6V</text>
+    <!-- Terminals -->
+    <circle cx="70" cy="170" r="4" fill="#f87171"/>
+    <text x="70" y="186" text-anchor="middle" fill="#f87171" font-size="8" font-weight="700">+ 6V</text>
+    <circle cx="190" cy="170" r="4" fill="#8899b4"/>
+    <text x="190" y="186" text-anchor="middle" fill="#8899b4" font-size="8" font-weight="700">− GND</text>
+  </g>
+
+  <!-- ─── Solar Panel 2 ─── -->
+  <g id="solar2" data-tt="Solar Panel 2 (6V)|6V photovoltaic solar panel.|Connected in SERIES with Panel 1|to produce 12V total output.|Negative terminal connects to|Panel 1 positive terminal.">
+    <rect x="260" y="60" width="180" height="110" rx="12" fill="#111827" stroke="#facc15" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect x="260" y="60" width="180" height="110" rx="12" fill="none" stroke="#facc15" stroke-width="1" opacity="0.2" filter="url(#glow-yellow)"/>
+    <!-- Solar cell grid -->
+    <rect x="278" y="78" width="64" height="36" rx="3" fill="#1a1a00" stroke="#facc1580" stroke-width="0.8"/>
+    <line x1="298" y1="78" x2="298" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="318" y1="78" x2="318" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="278" y1="92" x2="342" y2="92" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="278" y1="104" x2="342" y2="104" stroke="#facc1540" stroke-width="0.5"/>
+    <rect x="358" y="78" width="64" height="36" rx="3" fill="#1a1a00" stroke="#facc1580" stroke-width="0.8"/>
+    <line x1="378" y1="78" x2="378" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="398" y1="78" x2="398" y2="114" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="358" y1="92" x2="422" y2="92" stroke="#facc1540" stroke-width="0.5"/>
+    <line x1="358" y1="104" x2="422" y2="104" stroke="#facc1540" stroke-width="0.5"/>
+    <text x="350" y="136" text-anchor="middle" fill="#facc15" font-size="14" font-weight="800">SOLAR PANEL 2</text>
+    <text x="350" y="152" text-anchor="middle" fill="#64748b" font-size="10" font-weight="600">6V</text>
+    <!-- Terminals -->
+    <circle cx="290" cy="170" r="4" fill="#f87171"/>
+    <text x="290" y="186" text-anchor="middle" fill="#f87171" font-size="8" font-weight="700">+ 6V</text>
+    <circle cx="410" cy="170" r="4" fill="#8899b4"/>
+    <text x="410" y="186" text-anchor="middle" fill="#8899b4" font-size="8" font-weight="700">− GND</text>
+  </g>
+
+  <!-- Series connection: Panel 1 (+) → Panel 2 (−) -->
+  <path d="M70,170 L70,200 L250,200 L250,170 L260,170 L260,200 L410,200 L410,170" fill="none" stroke="#facc15" stroke-width="0" opacity="0"/>
+  <!-- The SERIES link: Panel 1 (+6V) joins to Panel 2 (−GND) -->
+  <path d="M190,170 L190,200 L290,200 L290,170" fill="none" stroke="#facc15" stroke-width="2.5" class="wire-flow"/>
+  <rect x="216" y="192" width="58" height="16" rx="4" fill="#332b00" stroke="#facc15" stroke-width="1"/>
+  <text x="245" y="204" text-anchor="middle" fill="#facc15" font-size="8" font-weight="700">SERIES</text>
+
+  <!-- Combined 12V output labels -->
+  <!-- Panel 2 GND (−) is the overall GND -->
+  <!-- Panel 1 (+) gives +12V total -->
+  <rect x="32" y="196" width="50" height="14" rx="3" fill="#3a0808"/>
+  <text x="57" y="206" text-anchor="middle" fill="#f87171" font-size="8" font-weight="700">+12V out</text>
+  <rect x="398" y="196" width="50" height="14" rx="3" fill="#1e293b"/>
+  <text x="423" y="206" text-anchor="middle" fill="#8899b4" font-size="8" font-weight="700">GND out</text>
+
+  <!-- ─── 18650 Battery Charging Module ─── -->
+  <g id="charger" data-tt="18650 Battery Charging Module|Charges 18650 Li-ion battery from|12V solar panel output.|Input: ~12V from series solar panels.|Has built-in charge controller|with overcharge/discharge protection.|Output powers the LM2596 step-down.">
+    <rect x="540" y="60" width="240" height="120" rx="12" fill="#111827" stroke="#22d3ee" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect x="540" y="60" width="240" height="120" rx="12" fill="none" stroke="#22d3ee" stroke-width="1" opacity="0.15" filter="url(#glow-blue)"/>
+    <text x="660" y="90" text-anchor="middle" fill="#22d3ee" font-size="13" font-weight="800">BATTERY CHARGING</text>
+    <text x="660" y="106" text-anchor="middle" fill="#22d3ee" font-size="13" font-weight="800">MODULE</text>
+    <text x="660" y="122" text-anchor="middle" fill="#64748b" font-size="9">For 18650 Li-ion Cell</text>
+    <text x="660" y="136" text-anchor="middle" fill="#475569" font-size="8">Charge Controller + Protection</text>
+    <!-- Input pins -->
+    <circle cx="570" cy="180" r="4" fill="#f87171"/>
+    <text x="570" y="196" text-anchor="middle" fill="#f87171" font-size="7" font-weight="600">IN+</text>
+    <circle cx="620" cy="180" r="4" fill="#8899b4"/>
+    <text x="620" y="196" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">IN−</text>
+    <!-- Output pins -->
+    <circle cx="700" cy="180" r="4" fill="#facc15"/>
+    <text x="700" y="196" text-anchor="middle" fill="#facc15" font-size="7" font-weight="600">OUT+</text>
+    <circle cx="750" cy="180" r="4" fill="#8899b4"/>
+    <text x="750" y="196" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">OUT−</text>
+    <!-- Status LEDs -->
+    <circle cx="640" cy="155" r="3" fill="#f87171" class="pulse"/>
+    <text x="648" y="158" fill="#64748b" font-size="6">CHG</text>
+    <circle cx="672" cy="155" r="3" fill="#34d399" class="pulse" style="animation-delay:1s"/>
+    <text x="680" y="158" fill="#64748b" font-size="6">FULL</text>
+  </g>
+
+  <!-- Solar → Charger wires -->
+  <!-- Panel 1 (+12V) → Charger IN+ -->
+  <path d="M70,170 L70,220 L500,220 L500,180 L570,180" fill="none" stroke="#f87171" stroke-width="2.2" class="wire-flow" marker-end="url(#arrow-red)"/>
+  <!-- Panel 2 GND → Charger IN− -->
+  <path d="M410,170 L410,240 L520,240 L520,180 L620,180" fill="none" stroke="#8899b4" stroke-width="2.2" stroke-dasharray="5 3"/>
+
+  <!-- ─── 18650 Battery ─── -->
+  <g id="battery" data-tt="18650 Li-ion Battery|3.7V rechargeable lithium-ion cell.|Charged by the solar charging module.|Provides power when solar is|insufficient (cloudy / night).">
+    <rect x="600" y="240" width="120" height="50" rx="8" fill="#111827" stroke="#facc15" stroke-width="1.8"/>
+    <!-- Battery shape inside -->
+    <rect x="618" y="252" width="70" height="26" rx="4" fill="#1a1a00" stroke="#facc1580" stroke-width="1"/>
+    <rect x="688" y="258" width="8" height="14" rx="2" fill="#facc1580"/>
+    <text x="653" y="270" text-anchor="middle" fill="#facc15" font-size="9" font-weight="700">18650</text>
+    <text x="660" y="302" text-anchor="middle" fill="#64748b" font-size="8">3.7V Li-ion</text>
+  </g>
+  <!-- Battery connected to charger (B+ B−) -->
+  <line x1="640" y1="240" x2="640" y2="196" stroke="#facc15" stroke-width="1.2" stroke-dasharray="3 2"/>
+  <line x1="680" y1="240" x2="680" y2="196" stroke="#8899b4" stroke-width="1.2" stroke-dasharray="3 2"/>
+  <text x="655" y="218" text-anchor="middle" fill="#475569" font-size="7">B+ B−</text>
+
+  <!-- ─── LM2596 Buck Converter ─── -->
+  <g id="lm2596" data-tt="LM2596 Step-Down Module|DC-DC buck converter.|Input: Battery/Charger output (~3.7–12V).|Output: Regulated 5V DC.|Adjustable via potentiometer.|Powers the entire Arduino circuit.">
+    <rect x="860" y="60" width="220" height="120" rx="12" fill="#111827" stroke="#fb923c" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect x="860" y="60" width="220" height="120" rx="12" fill="none" stroke="#fb923c" stroke-width="1" opacity="0.15"/>
+    <!-- Board detail -->
+    <rect x="890" y="100" width="30" height="20" rx="3" fill="#1e293b" stroke="#475569" stroke-width="0.8"/>
+    <text x="905" y="113" text-anchor="middle" fill="#475569" font-size="6">IC</text>
+    <!-- Inductor coil -->
+    <circle cx="950" cy="110" r="10" fill="none" stroke="#fb923c40" stroke-width="1.5"/>
+    <circle cx="950" cy="110" r="5" fill="#fb923c20"/>
+    <!-- Pot -->
+    <rect x="980" y="100" width="18" height="18" rx="9" fill="#1e293b" stroke="#475569" stroke-width="0.8"/>
+    <text x="989" y="113" text-anchor="middle" fill="#475569" font-size="5">POT</text>
+    <!-- Capacitors -->
+    <rect x="1010" y="102" width="10" height="16" rx="2" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+    <rect x="1028" y="102" width="10" height="16" rx="2" fill="#1e293b" stroke="#475569" stroke-width="0.5"/>
+
+    <text x="970" y="88" text-anchor="middle" fill="#fb923c" font-size="15" font-weight="800">LM2596</text>
+    <text x="970" y="145" text-anchor="middle" fill="#64748b" font-size="9">DC-DC Step-Down Converter</text>
+    <text x="970" y="160" text-anchor="middle" fill="#475569" font-size="8">IN: ~3.7–12V → OUT: 5V</text>
+    <!-- Pins -->
+    <circle cx="890" cy="180" r="4" fill="#facc15"/>
+    <text x="890" y="196" text-anchor="middle" fill="#facc15" font-size="7" font-weight="600">IN+</text>
+    <circle cx="935" cy="180" r="4" fill="#8899b4"/>
+    <text x="935" y="196" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">IN−</text>
+    <circle cx="1005" cy="180" r="4" fill="#fb923c"/>
+    <text x="1005" y="196" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">OUT+</text>
+    <text x="1005" y="206" text-anchor="middle" fill="#fb923c" font-size="6">(5V)</text>
+    <circle cx="1050" cy="180" r="4" fill="#8899b4"/>
+    <text x="1050" y="196" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">OUT−</text>
+  </g>
+
+  <!-- Charger OUT → LM2596 IN -->
+  <path d="M700,180 L700,210 L830,210 L830,180 L890,180" fill="none" stroke="#facc15" stroke-width="2.2" class="wire-flow" marker-end="url(#arrow-yellow)"/>
+  <path d="M750,180 L750,230 L840,230 L840,180 L935,180" fill="none" stroke="#8899b4" stroke-width="2" stroke-dasharray="5 3"/>
+
+  <!-- LM2596 OUT → 5V Bus (long wire going down to Arduino) -->
+  <path d="M1005,180 L1005,210 L1120,210 L1120,550" fill="none" stroke="#fb923c" stroke-width="2.5" class="wire-flow" marker-end="url(#arrow-orange)"/>
+  <path d="M1050,180 L1050,230 L1140,230 L1140,550" fill="none" stroke="#8899b4" stroke-width="2" stroke-dasharray="5 3"/>
+
+  <!-- 5V and GND label on the output wires -->
+  <rect x="1107" y="370" width="28" height="14" rx="3" fill="#3a2508"/>
+  <text x="1121" y="380" text-anchor="middle" fill="#fb923c" font-size="8" font-weight="700">5V</text>
+  <rect x="1128" y="370" width="28" height="14" rx="3" fill="#1e293b"/>
+  <text x="1142" y="380" text-anchor="middle" fill="#8899b4" font-size="8" font-weight="700">GND</text>
+
+  <!-- Power flow arrow label -->
+  <g opacity="0.6">
+    <text x="490" y="54" text-anchor="middle" fill="#facc15" font-size="9" font-weight="600">⚡ 12V (series)</text>
+    <path d="M440,48 L538,48" fill="none" stroke="#facc1560" stroke-width="1" marker-end="url(#arrow-yellow)"/>
+    <text x="800" y="54" text-anchor="middle" fill="#facc15" font-size="9" font-weight="600">⚡ 3.7–12V</text>
+    <path d="M750,48 L850,48" fill="none" stroke="#facc1560" stroke-width="1" marker-end="url(#arrow-yellow)"/>
+    <text x="1100" y="54" text-anchor="middle" fill="#fb923c" font-size="9" font-weight="600">⚡ 5V regulated</text>
+    <path d="M1050" y1="48" x2="1160" y2="48" fill="none" stroke="#fb923c60" stroke-width="1" marker-end="url(#arrow-orange)"/>
+  </g>
+
+  <!-- ============================================================ -->
+  <!--  SEPARATOR                                                   -->
+  <!-- ============================================================ -->
+  <line x1="30" y1="320" x2="1470" y2="320" stroke="#2a3450" stroke-width="1" stroke-dasharray="6 4" opacity="0.5"/>
+  <rect x="580" y="310" width="240" height="20" rx="6" fill="#111827" stroke="#60a5fa" stroke-width="1"/>
+  <text x="700" y="324" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="700">🔧  MAIN CONTROL CIRCUIT</text>
+
+  <!-- ============================================================ -->
+  <!--  ARDUINO UNO                                                 -->
+  <!-- ============================================================ -->
+  <g id="arduino" data-tt="Arduino Uno|Microcontroller board (ATmega328P).|Powered by LM2596 5V output.|Runs solar tracking, pump control,|sensor reading, and LCD display.">
+    <rect x="560" y="480" width="260" height="420" rx="12" fill="#111827" stroke="#60a5fa" stroke-width="2.5" filter="url(#shadow)"/>
+    <rect x="560" y="480" width="260" height="420" rx="12" fill="none" stroke="#60a5fa" stroke-width="1" opacity="0.2" filter="url(#glow-blue)"/>
+    <!-- USB Port -->
+    <rect x="650" y="470" width="80" height="24" rx="4" fill="#1e293b" stroke="#475569" stroke-width="1.5"/>
+    <text x="690" y="486" text-anchor="middle" fill="#64748b" font-size="8" font-weight="600">USB</text>
+    <!-- Title -->
+    <text x="690" y="520" text-anchor="middle" fill="#60a5fa" font-size="16" font-weight="800">ARDUINO UNO</text>
+    <text x="690" y="536" text-anchor="middle" fill="#475569" font-size="9" font-weight="500">ATmega328P</text>
+
+    <!-- LEFT PIN COLUMN (Digital) -->
+    <rect x="548" y="560" width="28" height="16" rx="3" fill="#1e3a5f"/>
+    <text x="562" y="572" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">D2</text>
+    <rect x="548" y="590" width="28" height="16" rx="3" fill="#1e3a5f"/>
+    <text x="562" y="602" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">D3</text>
+    <rect x="548" y="620" width="28" height="16" rx="3" fill="#1e3a5f"/>
+    <text x="562" y="632" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">D4</text>
+    <rect x="548" y="660" width="28" height="16" rx="3" fill="#1e3a5f"/>
+    <text x="562" y="672" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">D9</text>
+    <rect x="548" y="690" width="28" height="16" rx="3" fill="#1e3a5f"/>
+    <text x="562" y="702" text-anchor="middle" fill="#60a5fa" font-size="9" font-weight="600">D10</text>
+
+    <!-- RIGHT PIN COLUMN (Analog + I2C) -->
+    <rect x="804" y="560" width="28" height="16" rx="3" fill="#2d1f5e"/>
+    <text x="818" y="572" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="600">A1</text>
+    <rect x="804" y="590" width="28" height="16" rx="3" fill="#2d1f5e"/>
+    <text x="818" y="602" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="600">A2</text>
+    <rect x="804" y="620" width="28" height="16" rx="3" fill="#2d1f5e"/>
+    <text x="818" y="632" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="600">A3</text>
+    <rect x="804" y="660" width="28" height="16" rx="3" fill="#0f3a2a"/>
+    <text x="818" y="672" text-anchor="middle" fill="#34d399" font-size="9" font-weight="600">A4</text>
+    <rect x="804" y="690" width="28" height="16" rx="3" fill="#0f3a2a"/>
+    <text x="818" y="702" text-anchor="middle" fill="#34d399" font-size="9" font-weight="600">A5</text>
+    <rect x="804" y="720" width="28" height="16" rx="3" fill="#2d1f5e"/>
+    <text x="818" y="732" text-anchor="middle" fill="#a78bfa" font-size="9" font-weight="600">A6</text>
+
+    <!-- BOTTOM PINS (Power) -->
+    <rect x="600" y="886" width="28" height="16" rx="3" fill="#3a2508"/>
+    <text x="614" y="898" text-anchor="middle" fill="#fb923c" font-size="9" font-weight="600">5V</text>
+    <rect x="670" y="886" width="32" height="16" rx="3" fill="#1e293b"/>
+    <text x="686" y="898" text-anchor="middle" fill="#8899b4" font-size="9" font-weight="600">GND</text>
+    <rect x="740" y="886" width="28" height="16" rx="3" fill="#3a0808"/>
+    <text x="754" y="898" text-anchor="middle" fill="#f87171" font-size="9" font-weight="600">VIN</text>
+
+    <!-- SDA/SCL labels -->
+    <text x="838" y="672" fill="#34d399" font-size="7" font-weight="500">SDA</text>
+    <text x="838" y="702" fill="#34d399" font-size="7" font-weight="500">SCL</text>
+  </g>
+
+  <!-- LM2596 5V → Arduino 5V pin -->
+  <path d="M1120,550 L1120,940 L614,940 L614,902" fill="none" stroke="#fb923c" stroke-width="2.5"/>
+  <!-- LM2596 GND → Arduino GND pin -->
+  <path d="M1140,550 L1140,960 L686,960 L686,902" fill="none" stroke="#8899b4" stroke-width="2"/>
+
+  <!-- ============================================================ -->
+  <!--  DS18B20                                                     -->
+  <!-- ============================================================ -->
+  <g id="ds18b20" data-tt="DS18B20|Waterproof digital temperature sensor.|Measures water temperature (−55 to +125 °C).|Connected to D2 with 4.7 kΩ pull-up.|Protocol: 1-Wire">
+    <rect x="180" y="520" width="200" height="80" rx="10" fill="#111827" stroke="#60a5fa" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="280" y="550" text-anchor="middle" fill="#60a5fa" font-size="13" font-weight="700">DS18B20</text>
+    <text x="280" y="566" text-anchor="middle" fill="#64748b" font-size="9">Water Temp Sensor</text>
+    <text x="280" y="582" text-anchor="middle" fill="#475569" font-size="8">1-Wire · D2</text>
+    <circle cx="210" cy="600" r="3" fill="#fb923c"/>
+    <text x="210" y="614" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="280" cy="600" r="3" fill="#60a5fa"/>
+    <text x="280" y="614" text-anchor="middle" fill="#60a5fa" font-size="7" font-weight="600">DATA</text>
+    <circle cx="350" cy="600" r="3" fill="#8899b4"/>
+    <text x="350" y="614" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+  </g>
+  <!-- 4.7kΩ Pull-up -->
+  <g data-tt="4.7 kΩ Resistor|Pull-up resistor for 1-Wire bus.|Between DATA line and 5 V.">
+    <rect x="268" y="622" width="70" height="22" rx="4" fill="#1e293b" stroke="#fbbf24" stroke-width="1" stroke-dasharray="3 2"/>
+    <text x="303" y="636" text-anchor="middle" fill="#fbbf24" font-size="8" font-weight="600">4.7 kΩ</text>
+  </g>
+  <line x1="303" y1="622" x2="280" y2="600" stroke="#fbbf24" stroke-width="0.8" stroke-dasharray="2 2"/>
+  <!-- DS18B20 DATA → D2 -->
+  <path d="M280,600 L280,640 L480,640 L480,568 L548,568" fill="none" stroke="#60a5fa" stroke-width="1.8" class="wire-flow" marker-end="url(#arrow)"/>
+  <!-- DS18B20 VCC → 5V bus -->
+  <path d="M210,600 L210,940 L614,940" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <!-- DS18B20 GND → GND bus -->
+  <path d="M350,600 L350,630 L420,630 L420,960 L686,960" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  DHT11                                                       -->
+  <!-- ============================================================ -->
+  <g id="dht11" data-tt="DHT11|Digital humidity & temperature sensor.|Measures ambient air conditions.|Connected to D3.">
+    <rect x="180" y="670" width="200" height="80" rx="10" fill="#111827" stroke="#22d3ee" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="280" y="700" text-anchor="middle" fill="#22d3ee" font-size="13" font-weight="700">DHT11</text>
+    <text x="280" y="716" text-anchor="middle" fill="#64748b" font-size="9">Ambient Temp + Humidity</text>
+    <text x="280" y="732" text-anchor="middle" fill="#475569" font-size="8">Digital · D3</text>
+    <circle cx="210" cy="750" r="3" fill="#fb923c"/>
+    <text x="210" y="766" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="280" cy="750" r="3" fill="#22d3ee"/>
+    <text x="280" y="766" text-anchor="middle" fill="#22d3ee" font-size="7" font-weight="600">DATA</text>
+    <circle cx="350" cy="750" r="3" fill="#8899b4"/>
+    <text x="350" y="766" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+  </g>
+  <!-- DHT11 DATA → D3 -->
+  <path d="M280,750 L280,780 L496,780 L496,598 L548,598" fill="none" stroke="#22d3ee" stroke-width="1.8" class="wire-flow" marker-end="url(#arrow)"/>
+  <path d="M210,750 L210,940" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="M350,750 L350,780 L420,780 L420,960" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  RELAY + PUMP                                                -->
+  <!-- ============================================================ -->
+  <g id="relay" data-tt="Relay Module (5V)|Single-channel relay for water pump.|Active LOW — D4 controls IN pin.|Pump runs in short duty cycles.">
+    <rect x="180" y="820" width="200" height="80" rx="10" fill="#111827" stroke="#f472b6" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="280" y="850" text-anchor="middle" fill="#f472b6" font-size="13" font-weight="700">RELAY MODULE</text>
+    <text x="280" y="866" text-anchor="middle" fill="#64748b" font-size="9">Water Pump Control</text>
+    <text x="280" y="882" text-anchor="middle" fill="#475569" font-size="8">Active LOW · D4</text>
+    <circle cx="210" cy="900" r="3" fill="#fb923c"/>
+    <text x="210" y="916" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="280" cy="900" r="3" fill="#f472b6"/>
+    <text x="280" y="916" text-anchor="middle" fill="#f472b6" font-size="7" font-weight="600">IN</text>
+    <circle cx="350" cy="900" r="3" fill="#8899b4"/>
+    <text x="350" y="916" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+  </g>
+  <!-- Relay IN → D4 -->
+  <path d="M280,900 L280,930 L510,930 L510,628 L548,628" fill="none" stroke="#f472b6" stroke-width="1.8" class="wire-flow" marker-end="url(#arrow)"/>
+  <path d="M210,900 L210,940" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="M350,900 L350,930 L420,930 L420,960" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- Pump -->
+  <g id="pump" data-tt="Water Pump|Small DC submersible pump.|Circulates water through the|solar thermal collector.">
+    <rect x="60" y="845" width="90" height="50" rx="8" fill="#111827" stroke="#f472b6" stroke-width="1.2"/>
+    <text x="105" y="867" text-anchor="middle" fill="#f472b6" font-size="10" font-weight="700">PUMP</text>
+    <text x="105" y="883" text-anchor="middle" fill="#475569" font-size="7">DC Motor</text>
+  </g>
+  <line x1="150" y1="860" x2="180" y2="860" stroke="#f472b6" stroke-width="1.5" stroke-dasharray="5 3"/>
+
+  <!-- ============================================================ -->
+  <!--  PAN SERVO                                                   -->
+  <!-- ============================================================ -->
+  <g id="pan-servo" data-tt="Pan Servo (SG90)|Controls horizontal (pan) rotation|of the solar collector.|PWM signal on D9. Range: 45°—135°">
+    <rect x="180" y="360" width="180" height="70" rx="10" fill="#111827" stroke="#fbbf24" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="270" y="388" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700">PAN SERVO</text>
+    <text x="270" y="404" text-anchor="middle" fill="#64748b" font-size="9">Horizontal Tracking</text>
+    <text x="270" y="418" text-anchor="middle" fill="#475569" font-size="8">PWM · D9 · 45°–135°</text>
+    <circle cx="215" cy="430" r="3" fill="#fb923c"/>
+    <text x="215" y="445" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="270" cy="430" r="3" fill="#fbbf24"/>
+    <text x="270" y="445" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">SIG</text>
+    <circle cx="325" cy="430" r="3" fill="#8899b4"/>
+    <text x="325" y="445" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+  </g>
+  <!-- Pan SIG → D9 -->
+  <path d="M270,430 L270,460 L520,460 L520,668 L548,668" fill="none" stroke="#fbbf24" stroke-width="1.8" class="wire-flow" marker-end="url(#arrow)"/>
+  <path d="M215,430 L215,460 L140,460 L140,940 L210,940" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="M325,430 L325,460 L390,460 L390,960 L420,960" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  TILT SERVO                                                  -->
+  <!-- ============================================================ -->
+  <g id="tilt-servo" data-tt="Tilt Servo (SG90)|Controls vertical (tilt) elevation|of the solar collector.|PWM signal on D10. Range: 45°—135°">
+    <rect x="430" y="360" width="180" height="70" rx="10" fill="#111827" stroke="#fbbf24" stroke-width="1.8" filter="url(#shadow)"/>
+    <text x="520" y="388" text-anchor="middle" fill="#fbbf24" font-size="13" font-weight="700">TILT SERVO</text>
+    <text x="520" y="404" text-anchor="middle" fill="#64748b" font-size="9">Vertical Tracking</text>
+    <text x="520" y="418" text-anchor="middle" fill="#475569" font-size="8">PWM · D10 · 45°–135°</text>
+    <circle cx="465" cy="430" r="3" fill="#fb923c"/>
+    <text x="465" y="445" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="520" cy="430" r="3" fill="#fbbf24"/>
+    <text x="520" y="445" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">SIG</text>
+    <circle cx="575" cy="430" r="3" fill="#8899b4"/>
+    <text x="575" y="445" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+  </g>
+  <!-- Tilt SIG → D10 -->
+  <path d="M520,430 L520,456 L536,456 L536,698 L548,698" fill="none" stroke="#fbbf24" stroke-width="1.8" class="wire-flow" marker-end="url(#arrow)"/>
+  <path d="M465,430 L465,460 L140,460" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <path d="M575,430 L575,460 L390,460" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  LDR ARRAY with 1kΩ RESISTORS                                -->
+  <!-- ============================================================ -->
+  <g id="ldrs" data-tt="LDR Array (4×)|Four light-dependent resistors in|voltage divider config with 1 kΩ.|Arranged in cross pattern for|dual-axis sun tracking.|TL→A1, TR→A2, BL→A3, BR→A6|Each LDR + 1kΩ → 5V & GND.">
+    <rect x="940" y="500" width="280" height="220" rx="12" fill="#111827" stroke="#a78bfa" stroke-width="2" filter="url(#shadow)"/>
+    <text x="1080" y="530" text-anchor="middle" fill="#a78bfa" font-size="14" font-weight="800">LDR ARRAY</text>
+    <text x="1080" y="546" text-anchor="middle" fill="#64748b" font-size="9">4× Light Dependent Resistors</text>
+    <text x="1080" y="560" text-anchor="middle" fill="#475569" font-size="8">Voltage Divider with 1 kΩ resistors</text>
+
+    <!-- LDR TL -->
+    <g data-tt="LDR Top-Left|Light sensor for upper-left quadrant.|Voltage divider: LDR + 1 kΩ to GND.|Output to A1.">
+      <rect x="960" y="575" width="56" height="40" rx="5" fill="#1e1540" stroke="#a78bfa" stroke-width="1.2"/>
+      <text x="988" y="591" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="700">TL</text>
+      <text x="988" y="604" text-anchor="middle" fill="#64748b" font-size="7">LDR</text>
+      <!-- 1kΩ resistor -->
+      <rect x="966" y="618" width="44" height="14" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="0.8"/>
+      <text x="988" y="628" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">1 kΩ</text>
+    </g>
+
+    <!-- LDR TR -->
+    <g data-tt="LDR Top-Right|Light sensor for upper-right quadrant.|Voltage divider: LDR + 1 kΩ to GND.|Output to A2.">
+      <rect x="1034" y="575" width="56" height="40" rx="5" fill="#1e1540" stroke="#a78bfa" stroke-width="1.2"/>
+      <text x="1062" y="591" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="700">TR</text>
+      <text x="1062" y="604" text-anchor="middle" fill="#64748b" font-size="7">LDR</text>
+      <rect x="1040" y="618" width="44" height="14" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="0.8"/>
+      <text x="1062" y="628" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">1 kΩ</text>
+    </g>
+
+    <!-- LDR BL -->
+    <g data-tt="LDR Bottom-Left|Light sensor for lower-left quadrant.|Voltage divider: LDR + 1 kΩ to GND.|Output to A3.">
+      <rect x="960" y="645" width="56" height="40" rx="5" fill="#1e1540" stroke="#a78bfa" stroke-width="1.2"/>
+      <text x="988" y="661" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="700">BL</text>
+      <text x="988" y="674" text-anchor="middle" fill="#64748b" font-size="7">LDR</text>
+      <rect x="966" y="688" width="44" height="14" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="0.8"/>
+      <text x="988" y="698" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">1 kΩ</text>
+    </g>
+
+    <!-- LDR BR -->
+    <g data-tt="LDR Bottom-Right|Light sensor for lower-right quadrant.|Voltage divider: LDR + 1 kΩ to GND.|Output to A6.">
+      <rect x="1034" y="645" width="56" height="40" rx="5" fill="#1e1540" stroke="#a78bfa" stroke-width="1.2"/>
+      <text x="1062" y="661" text-anchor="middle" fill="#c4b5fd" font-size="9" font-weight="700">BR</text>
+      <text x="1062" y="674" text-anchor="middle" fill="#64748b" font-size="7">LDR</text>
+      <rect x="1040" y="688" width="44" height="14" rx="3" fill="#1e293b" stroke="#fbbf24" stroke-width="0.8"/>
+      <text x="1062" y="698" text-anchor="middle" fill="#fbbf24" font-size="7" font-weight="600">1 kΩ</text>
+    </g>
+
+    <!-- Divider schematic note -->
+    <text x="1150" y="585" fill="#475569" font-size="8" font-weight="500">5V ──┤</text>
+    <text x="1150" y="598" fill="#475569" font-size="8" font-weight="500">     LDR</text>
+    <text x="1150" y="611" fill="#475569" font-size="8" font-weight="500">     ├── A(n)</text>
+    <text x="1150" y="624" fill="#475569" font-size="8" font-weight="500">     1kΩ</text>
+    <text x="1150" y="637" fill="#475569" font-size="8" font-weight="500">GND ─┘</text>
+
+    <!-- 5V and GND connections for LDRs -->
+    <circle cx="960" cy="570" r="3" fill="#fb923c"/>
+    <text x="952" y="566" fill="#fb923c" font-size="6" font-weight="600">5V</text>
+    <circle cx="1090" cy="710" r="3" fill="#8899b4"/>
+    <text x="1098" y="714" fill="#8899b4" font-size="6" font-weight="600">GND</text>
+  </g>
+
+  <!-- LDR → Analog pin wires -->
+  <!-- TL → A1 -->
+  <path d="M960,595 L910,595 L910,568 L832,568" fill="none" stroke="#a78bfa" stroke-width="1.6" class="wire-flow"/>
+  <text x="870" y="562" fill="#a78bfa" font-size="7" font-weight="500">A1</text>
+  <!-- TR → A2 -->
+  <path d="M1034,595 L920,595 L920,598 L832,598" fill="none" stroke="#a78bfa" stroke-width="1.6" class="wire-flow"/>
+  <text x="870" y="594" fill="#a78bfa" font-size="7" font-weight="500">A2</text>
+  <!-- BL → A3 -->
+  <path d="M960,665 L930,665 L930,628 L832,628" fill="none" stroke="#a78bfa" stroke-width="1.6" class="wire-flow"/>
+  <text x="870" y="624" fill="#a78bfa" font-size="7" font-weight="500">A3</text>
+  <!-- BR → A6 -->
+  <path d="M1034,665 L930,665 L930,728 L832,728" fill="none" stroke="#a78bfa" stroke-width="1.6" class="wire-flow"/>
+  <text x="870" y="724" fill="#a78bfa" font-size="7" font-weight="500">A6</text>
+
+  <!-- LDR 5V connection -->
+  <path d="M960,570 L940,570 L940,940 L614,940" fill="none" stroke="#fb923c" stroke-width="1.2" stroke-dasharray="4 3"/>
+  <!-- LDR GND connection -->
+  <path d="M1090,710 L1090,960 L686,960" fill="none" stroke="#8899b4" stroke-width="1.2" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  I²C LCD                                                     -->
+  <!-- ============================================================ -->
+  <g id="lcd" data-tt="I²C LCD 16×2|16-column, 2-row character LCD|with PCF8574 I²C backpack.|Address: 0x27 (auto-detected).|SDA→A4, SCL→A5">
+    <rect x="940" y="760" width="220" height="100" rx="10" fill="#111827" stroke="#34d399" stroke-width="1.8" filter="url(#shadow)"/>
+    <rect x="940" y="760" width="220" height="100" rx="10" fill="none" stroke="#34d399" stroke-width="0.8" opacity="0.15" filter="url(#glow-green)"/>
+    <rect x="962" y="780" width="176" height="36" rx="4" fill="#0a1f15" stroke="#34d399" stroke-width="1"/>
+    <text x="1050" y="796" text-anchor="middle" fill="#34d399" font-size="8" font-weight="600">Wtr:25.0C</text>
+    <text x="1050" y="810" text-anchor="middle" fill="#34d399" font-size="8" font-weight="600">Level:OK</text>
+    <text x="1050" y="838" text-anchor="middle" fill="#34d399" font-size="12" font-weight="700">LCD 16×2</text>
+    <text x="1050" y="852" text-anchor="middle" fill="#64748b" font-size="8">I²C · 0x27 · PCF8574</text>
+    <circle cx="970" cy="860" r="3" fill="#fb923c"/>
+    <text x="970" y="875" text-anchor="middle" fill="#fb923c" font-size="7" font-weight="600">VCC</text>
+    <circle cx="1020" cy="860" r="3" fill="#8899b4"/>
+    <text x="1020" y="875" text-anchor="middle" fill="#8899b4" font-size="7" font-weight="600">GND</text>
+    <circle cx="1080" cy="860" r="3" fill="#34d399"/>
+    <text x="1080" y="875" text-anchor="middle" fill="#34d399" font-size="7" font-weight="600">SDA</text>
+    <circle cx="1130" cy="860" r="3" fill="#34d399"/>
+    <text x="1130" y="875" text-anchor="middle" fill="#34d399" font-size="7" font-weight="600">SCL</text>
+  </g>
+  <!-- LCD SDA → A4 -->
+  <path d="M1080,860 L1080,890 L880,890 L880,668 L832,668" fill="none" stroke="#34d399" stroke-width="1.8" class="wire-flow"/>
+  <!-- LCD SCL → A5 -->
+  <path d="M1130,860 L1130,906 L894,906 L894,698 L832,698" fill="none" stroke="#34d399" stroke-width="1.8" class="wire-flow"/>
+  <!-- LCD VCC -->
+  <path d="M970,860 L970,940 L614,940" fill="none" stroke="#fb923c" stroke-width="1.5" stroke-dasharray="4 3"/>
+  <!-- LCD GND -->
+  <path d="M1020,860 L1020,960 L686,960" fill="none" stroke="#8899b4" stroke-width="1.5" stroke-dasharray="4 3"/>
+
+  <!-- ============================================================ -->
+  <!--  5V / GND POWER RAILS                                       -->
+  <!-- ============================================================ -->
+  <line x1="140" y1="940" x2="1120" y2="940" stroke="#fb923c" stroke-width="2.5" opacity="0.35"/>
+  <rect x="80" y="932" width="36" height="16" rx="4" fill="#3a2508" stroke="#fb923c" stroke-width="1"/>
+  <text x="98" y="944" text-anchor="middle" fill="#fb923c" font-size="9" font-weight="700">5V</text>
+  <line x1="350" y1="960" x2="1090" y2="960" stroke="#8899b4" stroke-width="2.5" opacity="0.35"/>
+  <rect x="80" y="952" width="42" height="16" rx="4" fill="#1e293b" stroke="#8899b4" stroke-width="1"/>
+  <text x="101" y="964" text-anchor="middle" fill="#8899b4" font-size="9" font-weight="700">GND</text>
+
+  <!-- Arduino 5V/GND to bus -->
+  <line x1="614" y1="902" x2="614" y2="940" stroke="#fb923c" stroke-width="2"/>
+  <line x1="686" y1="902" x2="686" y2="960" stroke="#8899b4" stroke-width="2"/>
+
+  <!-- Pulse dots -->
+  <circle cx="614" cy="940" r="4" fill="#fb923c" class="pulse"/>
+  <circle cx="686" cy="960" r="4" fill="#8899b4" class="pulse"/>
+  <circle cx="548" cy="568" r="3" fill="#60a5fa" class="pulse"/>
+  <circle cx="548" cy="598" r="3" fill="#22d3ee" class="pulse"/>
+  <circle cx="548" cy="628" r="3" fill="#f472b6" class="pulse"/>
+  <circle cx="548" cy="668" r="3" fill="#fbbf24" class="pulse"/>
+  <circle cx="548" cy="698" r="3" fill="#fbbf24" class="pulse"/>
+  <circle cx="832" cy="568" r="3" fill="#a78bfa" class="pulse"/>
+  <circle cx="832" cy="598" r="3" fill="#a78bfa" class="pulse"/>
+  <circle cx="832" cy="628" r="3" fill="#a78bfa" class="pulse"/>
+  <circle cx="832" cy="668" r="3" fill="#34d399" class="pulse"/>
+  <circle cx="832" cy="698" r="3" fill="#34d399" class="pulse"/>
+  <circle cx="832" cy="728" r="3" fill="#a78bfa" class="pulse"/>
+
+  <!-- ============================================================ -->
+  <!--  12V HEATING ELEMENT — SEPARATE SUPPLY                       -->
+  <!-- ============================================================ -->
+  <g id="heater-section">
+    <line x1="30" y1="1010" x2="1470" y2="1010" stroke="#f87171" stroke-width="1" stroke-dasharray="8 4" opacity="0.4"/>
+    <rect x="560" y="1000" width="280" height="20" rx="6" fill="#3a0808" stroke="#f87171" stroke-width="1"/>
+    <text x="700" y="1014" text-anchor="middle" fill="#f87171" font-size="9" font-weight="700">⚡ SEPARATE 12 V HEATING CIRCUIT ⚡</text>
+
+    <!-- 12V PSU -->
+    <g id="psu-12v" data-tt="12V DC Power Supply|Dedicated 12V DC adapter/battery.|Powers the heating element ONLY.|Completely separate from solar/LM2596.|Common GND shared with Arduino.">
+      <rect x="200" y="1050" width="200" height="90" rx="12" fill="#111827" stroke="#f87171" stroke-width="2.5" filter="url(#shadow)"/>
+      <rect x="200" y="1050" width="200" height="90" rx="12" fill="none" stroke="#f87171" stroke-width="1" opacity="0.2" filter="url(#glow-red)"/>
+      <text x="300" y="1080" text-anchor="middle" fill="#f87171" font-size="18">🔌</text>
+      <text x="300" y="1100" text-anchor="middle" fill="#f87171" font-size="14" font-weight="800">12V DC PSU</text>
+      <text x="300" y="1118" text-anchor="middle" fill="#64748b" font-size="9">Adapter / Battery</text>
+      <circle cx="240" cy="1140" r="4" fill="#f87171"/>
+      <text x="240" y="1158" text-anchor="middle" fill="#f87171" font-size="8" font-weight="700">+12V</text>
+      <circle cx="360" cy="1140" r="4" fill="#8899b4"/>
+      <text x="360" y="1158" text-anchor="middle" fill="#8899b4" font-size="8" font-weight="700">GND</text>
+    </g>
+
+    <!-- Switch -->
+    <g id="switch" data-tt="ON/OFF Switch|Manual toggle switch or MOSFET|to control the heating element.|Can be replaced with a relay for|Arduino-controlled heating.">
+      <rect x="540" y="1060" width="140" height="60" rx="10" fill="#111827" stroke="#fb923c" stroke-width="1.8" filter="url(#shadow)"/>
+      <text x="610" y="1086" text-anchor="middle" fill="#fb923c" font-size="12" font-weight="700">SWITCH</text>
+      <text x="610" y="1102" text-anchor="middle" fill="#64748b" font-size="8">ON / OFF Control</text>
+      <circle cx="560" cy="1120" r="3" fill="#f87171"/>
+      <text x="560" y="1134" text-anchor="middle" fill="#f87171" font-size="7">IN</text>
+      <circle cx="660" cy="1120" r="3" fill="#f87171"/>
+      <text x="660" y="1134" text-anchor="middle" fill="#f87171" font-size="7">OUT</text>
+    </g>
+
+    <!-- Heating Element -->
+    <g id="heater" data-tt="Heating Element|12V DC nichrome/ceramic heater.|Immersed in water to provide|supplemental heating when solar|energy is insufficient.">
+      <rect x="820" y="1040" width="240" height="100" rx="12" fill="#111827" stroke="#f87171" stroke-width="2.5" filter="url(#shadow)"/>
+      <ellipse cx="940" cy="1090" rx="70" ry="30" fill="#f87171" opacity="0.08" style="animation: heat-glow 2.5s ease-in-out infinite"/>
+      <path d="M860,1090 Q875,1070 890,1090 Q905,1110 920,1090 Q935,1070 950,1090 Q965,1110 980,1090 Q995,1070 1010,1090" fill="none" stroke="#f87171" stroke-width="2.5" stroke-linecap="round"/>
+      <text x="940" y="1124" text-anchor="middle" fill="#f87171" font-size="13" font-weight="800">HEATING ELEMENT</text>
+      <text x="940" y="1136" text-anchor="middle" fill="#64748b" font-size="8">12V DC · Nichrome</text>
+      <circle cx="850" cy="1090" r="4" fill="#f87171"/>
+      <circle cx="1020" cy="1090" r="4" fill="#8899b4"/>
+    </g>
+
+    <!-- Wires -->
+    <path d="M240,1140 L240,1170 L500,1170 L500,1120 L560,1120" fill="none" stroke="#f87171" stroke-width="2.5" class="wire-flow" marker-end="url(#arrow-red)"/>
+    <path d="M660,1120 L740,1120 L740,1090 L850,1090" fill="none" stroke="#f87171" stroke-width="2.5" class="wire-flow" marker-end="url(#arrow-red)"/>
+    <path d="M1020,1090 L1080,1090 L1080,1200 L360,1200 L360,1140" fill="none" stroke="#8899b4" stroke-width="2.5" stroke-dasharray="6 3"/>
+
+    <!-- Common GND note -->
+    <path d="M686,960 L686,1200 L360,1200" fill="none" stroke="#8899b4" stroke-width="1" stroke-dasharray="3 3" opacity="0.3"/>
+    <text x="700" y="1218" fill="#64748b" font-size="7" font-weight="500">Common GND (shared with Arduino 5V circuit)</text>
+
+    <rect x="450" y="1163" width="50" height="14" rx="3" fill="#3a0808"/>
+    <text x="475" y="1173" text-anchor="middle" fill="#f87171" font-size="8" font-weight="700">+12V</text>
+  </g>
+
+  <!-- ============================================================ -->
+  <!--  NOTES                                                       -->
+  <!-- ============================================================ -->
+  <g opacity="0.7">
+    <rect x="1250" y="400" width="210" height="200" rx="8" fill="#111827" stroke="#2a3450" stroke-width="1"/>
+    <text x="1266" y="422" fill="#60a5fa" font-size="10" font-weight="700">📌 Notes</text>
+    <text x="1266" y="440" fill="#8899b4" font-size="8">• 2× 6V solar panels in series = 12V</text>
+    <text x="1266" y="454" fill="#8899b4" font-size="8">• 18650 charging module takes 12V in</text>
+    <text x="1266" y="468" fill="#8899b4" font-size="8">• LM2596 steps down to regulated 5V</text>
+    <text x="1266" y="482" fill="#8899b4" font-size="8">• 5V powers Arduino + all sensors</text>
+    <text x="1266" y="500" fill="#8899b4" font-size="8">• Each LDR uses 1 kΩ voltage divider</text>
+    <text x="1266" y="514" fill="#8899b4" font-size="8">• DS18B20 needs 4.7 kΩ pull-up</text>
+    <text x="1266" y="532" fill="#8899b4" font-size="8">• Heating element runs on separate</text>
+    <text x="1266" y="546" fill="#8899b4" font-size="8">  12V PSU (NOT from solar panels)</text>
+    <text x="1266" y="564" fill="#8899b4" font-size="8">• Common GND between all circuits</text>
+    <text x="1266" y="582" fill="#8899b4" font-size="8">• Relay is active LOW on D4</text>
+  </g>
+
+</svg>
+</div>
+
+<!-- Pin Reference Tables -->
+<div class="pin-table-wrap">
+  <h2>☀️ Solar Power Chain</h2>
+  <table>
+    <thead>
+      <tr><th>Stage</th><th>Component</th><th>Input</th><th>Output</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>Solar Panel 1 (6V)</td><td>Sunlight</td><td>+6V</td><td>In series with Panel 2</td></tr>
+      <tr><td>2</td><td>Solar Panel 2 (6V)</td><td>Sunlight</td><td>Combined +12V</td><td>(−) of Panel 1 → (+) of Panel 2</td></tr>
+      <tr><td>3</td><td>18650 Battery Charging Module</td><td>~12V from panels</td><td>Regulated charge</td><td>Overcharge/discharge protection</td></tr>
+      <tr><td>4</td><td>18650 Li-ion Battery</td><td>From charger</td><td>3.7V nominal</td><td>Energy storage for night/cloudy</td></tr>
+      <tr><td>5</td><td>LM2596 Buck Converter</td><td>3.7–12V</td><td>5V regulated</td><td>Adjust via potentiometer</td></tr>
+      <tr><td>6</td><td>Arduino Uno (5V pin)</td><td>5V from LM2596</td><td>—</td><td>Powers entire control circuit</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <h2>📋 Arduino Pin Reference</h2>
+  <table>
+    <thead>
+      <tr><th>Pin</th><th>Component</th><th>Signal Type</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>D2</td><td>DS18B20 — Water Temp</td><td>1-Wire Data</td><td>4.7 kΩ pull-up to 5 V</td></tr>
+      <tr><td>D3</td><td>DHT11 — Ambient Temp/Humidity</td><td>Digital Data</td><td>—</td></tr>
+      <tr><td>D4</td><td>Relay Module — Pump</td><td>Digital OUT</td><td>Active LOW</td></tr>
+      <tr><td>D9</td><td>Pan Servo (SG90)</td><td>PWM</td><td>Horizontal tracking, 45°–135°</td></tr>
+      <tr><td>D10</td><td>Tilt Servo (SG90)</td><td>PWM</td><td>Vertical tracking, 45°–135°</td></tr>
+      <tr><td>A1</td><td>LDR — Top Left</td><td>Analog IN</td><td>1 kΩ voltage divider</td></tr>
+      <tr><td>A2</td><td>LDR — Top Right</td><td>Analog IN</td><td>1 kΩ voltage divider</td></tr>
+      <tr><td>A3</td><td>LDR — Bottom Left</td><td>Analog IN</td><td>1 kΩ voltage divider</td></tr>
+      <tr><td>A4</td><td>LCD — SDA (I²C)</td><td>I²C Data</td><td>PCF8574, addr 0x27</td></tr>
+      <tr><td>A5</td><td>LCD — SCL (I²C)</td><td>I²C Clock</td><td>—</td></tr>
+      <tr><td>A6</td><td>LDR — Bottom Right</td><td>Analog IN</td><td>1 kΩ voltage divider</td></tr>
+      <tr><td>5V</td><td>All sensors, LCD, relay, servos, LDRs</td><td>Power</td><td>From LM2596 output</td></tr>
+      <tr><td>GND</td><td>All components</td><td>Ground</td><td>Common GND (shared)</td></tr>
+    </tbody>
+  </table>
+
+  <br>
+  <h2>⚡ 12 V Heating Element Circuit (Separate)</h2>
+  <table>
+    <thead>
+      <tr><th>Terminal</th><th>Component</th><th>Connection</th><th>Notes</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>+12V</td><td>12 V DC Power Supply</td><td>→ Switch → Heater (+)</td><td>Dedicated adapter or battery</td></tr>
+      <tr><td>GND</td><td>12 V DC Power Supply</td><td>→ Heater (−)</td><td>Shared GND with Arduino</td></tr>
+      <tr><td>Switch</td><td>Toggle / MOSFET</td><td>Series with +12 V line</td><td>Manual ON/OFF</td></tr>
+      <tr><td>Heater</td><td>Nichrome / Ceramic</td><td>Immersed in water tank</td><td>Supplemental heating</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+  const tooltip = document.getElementById('tooltip');
+  document.querySelectorAll('[data-tt]').forEach(el => {
+    el.style.cursor = 'pointer';
+    el.addEventListener('mouseenter', e => {
+      const parts = el.dataset.tt.split('|');
+      tooltip.innerHTML = `<div class="tt-title">${parts[0]}</div>` +
+        parts.slice(1).map(l => `<div>${l}</div>`).join('');
+      tooltip.classList.add('show');
+    });
+    el.addEventListener('mousemove', e => {
+      const pad = 16;
+      let x = e.clientX + pad, y = e.clientY + pad;
+      const r = tooltip.getBoundingClientRect();
+      if (x + r.width > window.innerWidth - pad) x = e.clientX - r.width - pad;
+      if (y + r.height > window.innerHeight - pad) y = e.clientY - r.height - pad;
+      tooltip.style.left = x + 'px';
+      tooltip.style.top = y + 'px';
+    });
+    el.addEventListener('mouseleave', () => tooltip.classList.remove('show'));
+  });
+</script>
+
+</body>
+</html>

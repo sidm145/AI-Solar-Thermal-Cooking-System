@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Solar Thermal Cooking System — Component List and Workflow</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 12px;
+      color: #1a1a1a;
+      background: #fff;
+      line-height: 1.5;
+      padding: 40px 50px;
+    }
+
+    h1 {
+      font-size: 22px;
+      text-align: center;
+      margin-bottom: 4px;
+      color: #111;
+    }
+
+    .subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 4px;
+    }
+
+    .date {
+      text-align: center;
+      font-size: 10px;
+      color: #999;
+      margin-bottom: 28px;
+    }
+
+    hr {
+      border: none;
+      border-top: 1px solid #ccc;
+      margin: 24px 0;
+    }
+
+    h2 {
+      font-size: 16px;
+      color: #222;
+      margin-bottom: 10px;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #333;
+    }
+
+    h3 {
+      font-size: 13px;
+      color: #333;
+      margin: 14px 0 6px;
+    }
+
+    p {
+      margin-bottom: 6px;
+      color: #333;
+    }
+
+    /* ===== TABLES ===== */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 10px 0 20px;
+      font-size: 11px;
+    }
+
+    th, td {
+      border: 1px solid #bbb;
+      padding: 6px 10px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: #e8e8e8;
+      font-weight: bold;
+      font-size: 10px;
+      text-transform: uppercase;
+      color: #333;
+    }
+
+    tr:nth-child(even) td {
+      background: #f7f7f7;
+    }
+
+    /* ===== SUMMARY BOX ===== */
+    .summary-box {
+      border: 1.5px solid #333;
+      padding: 14px 18px;
+      margin-bottom: 24px;
+      background: #f9f9f9;
+    }
+
+    .summary-box h2 {
+      border-bottom: none;
+      margin-bottom: 8px;
+    }
+
+    .summary-grid {
+      display: flex;
+      justify-content: space-around;
+      text-align: center;
+    }
+
+    .summary-grid .item {
+      padding: 8px 16px;
+    }
+
+    .summary-grid .number {
+      font-size: 24px;
+      font-weight: bold;
+      color: #111;
+    }
+
+    .summary-grid .label {
+      font-size: 10px;
+      color: #666;
+      text-transform: uppercase;
+    }
+
+    /* ===== WORKFLOW ===== */
+    .step {
+      margin-bottom: 14px;
+      padding-left: 10px;
+      border-left: 3px solid #999;
+    }
+
+    .step h3 {
+      margin: 0 0 3px;
+    }
+
+    .step p {
+      margin: 0 0 4px;
+      font-size: 11px;
+      color: #444;
+    }
+
+    .step .chips {
+      font-size: 10px;
+      color: #666;
+      font-style: italic;
+    }
+
+    /* ===== PAGE BREAKS ===== */
+    .page-break {
+      page-break-before: always;
+    }
+
+    /* ===== PRINT ===== */
+    @media print {
+      body { padding: 20px 30px; }
+      .page-break { page-break-before: always; }
+      table { page-break-inside: avoid; }
+      .step { page-break-inside: avoid; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================ -->
+<!--  HEADER                                                      -->
+<!-- ============================================================ -->
+<h1>AI Solar Thermal Cooking System</h1>
+<div class="subtitle">Complete Component List and System Workflow</div>
+<div class="date">Project Documentation | June 2026</div>
+
+<!-- ============================================================ -->
+<!--  SUMMARY                                                     -->
+<!-- ============================================================ -->
+<div class="summary-box">
+  <h2>Project Summary</h2>
+  <div class="summary-grid">
+    <div class="item"><div class="number">19</div><div class="label">Total Components</div></div>
+    <div class="item"><div class="number">4</div><div class="label">Arduino Sketches</div></div>
+    <div class="item"><div class="number">5</div><div class="label">Libraries Used</div></div>
+    <div class="item"><div class="number">11</div><div class="label">Arduino Pins Used</div></div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!--  1. BILL OF MATERIALS                                        -->
+<!-- ============================================================ -->
+<h2>1. Bill of Materials (BOM)</h2>
+
+<table>
+  <thead>
+    <tr><th>#</th><th>Component</th><th>Qty</th><th>Category</th><th>Connection / Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Solar Panel 6V</td><td>2</td><td>Power</td><td>Connected in series to produce 12V; feeds charger module</td></tr>
+    <tr><td>2</td><td>18650 Battery Charging Module</td><td>1</td><td>Power</td><td>Input: ~12V from solar panels; charges 18650 battery with protection</td></tr>
+    <tr><td>3</td><td>18650 Li-ion Battery (3.7V)</td><td>1</td><td>Power</td><td>Energy storage for cloudy/night operation</td></tr>
+    <tr><td>4</td><td>LM2596 DC-DC Buck Converter</td><td>1</td><td>Power</td><td>Input: 3.7–12V; Output: regulated 5V for entire control circuit</td></tr>
+    <tr><td>5</td><td>Arduino Uno (ATmega328P)</td><td>1</td><td>Controller</td><td>Powered via 5V pin from LM2596</td></tr>
+    <tr><td>6</td><td>DS18B20 Waterproof Temp Sensor</td><td>1</td><td>Sensor</td><td>Pin D2 (1-Wire); measures water temperature; needs 4.7k pull-up</td></tr>
+    <tr><td>7</td><td>DHT11 Temp/Humidity Sensor</td><td>1</td><td>Sensor</td><td>Pin D3; measures ambient temperature and humidity</td></tr>
+    <tr><td>8</td><td>LDR (Light Dependent Resistor)</td><td>4</td><td>Sensor</td><td>Pins A1, A2, A3, A6; cross pattern for dual-axis sun tracking</td></tr>
+    <tr><td>9</td><td>Water Level Sensor</td><td>1</td><td>Sensor</td><td>Pin A0; analog reading, thresholds: LOW &lt;200, FULL &ge;300</td></tr>
+    <tr><td>10</td><td>SG90 Servo Motor (Pan)</td><td>1</td><td>Actuator</td><td>Pin D9 (PWM); horizontal sun tracking, range 45-135 degrees</td></tr>
+    <tr><td>11</td><td>SG90 Servo Motor (Tilt)</td><td>1</td><td>Actuator</td><td>Pin D10 (PWM); vertical sun tracking, range 45-135 degrees</td></tr>
+    <tr><td>12</td><td>5V Relay Module (single-channel)</td><td>1</td><td>Actuator</td><td>Pin D4; active LOW; controls water pump ON/OFF</td></tr>
+    <tr><td>13</td><td>DC Submersible Water Pump</td><td>1</td><td>Actuator</td><td>Connected via relay; circulates water through solar collector</td></tr>
+    <tr><td>14</td><td>I2C LCD 16x2 (PCF8574 backpack)</td><td>1</td><td>Display</td><td>Pins A4 (SDA), A5 (SCL); address 0x27 (auto-detected)</td></tr>
+    <tr><td>15</td><td>4.7k ohm Resistor</td><td>1</td><td>Passive</td><td>Pull-up resistor for DS18B20 DATA line to 5V</td></tr>
+    <tr><td>16</td><td>1k ohm Resistor</td><td>4</td><td>Passive</td><td>Voltage divider resistors for each LDR (to GND)</td></tr>
+    <tr><td>17</td><td>12V DC Power Supply (Adapter/Battery)</td><td>1</td><td>Heating</td><td>Dedicated supply for heating element only; common GND with Arduino</td></tr>
+    <tr><td>18</td><td>ON/OFF Switch (Toggle/MOSFET)</td><td>1</td><td>Heating</td><td>Series with +12V line; manual heater control</td></tr>
+    <tr><td>19</td><td>12V Heating Element (Nichrome/Ceramic)</td><td>1</td><td>Heating</td><td>Immersed in water tank; supplemental heating</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  2. COMPONENT DETAILS BY CATEGORY                            -->
+<!-- ============================================================ -->
+<h2>2. Component Details by Category</h2>
+
+<h3>2.1 Power Supply Components (5 items)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Specification</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Solar Panel 1 (6V)</td><td>6V photovoltaic panel</td><td>Connected in series with Panel 2 to produce combined 12V output</td></tr>
+    <tr><td>Solar Panel 2 (6V)</td><td>6V photovoltaic panel</td><td>Series with Panel 1; combined output feeds battery charger</td></tr>
+    <tr><td>18650 Charging Module</td><td>Input: ~12V; built-in charge controller</td><td>Charges 18650 battery with overcharge/over-discharge protection</td></tr>
+    <tr><td>18650 Li-ion Battery</td><td>3.7V nominal, rechargeable</td><td>Energy storage for operation during cloudy weather or night</td></tr>
+    <tr><td>LM2596 Buck Converter</td><td>Input: 3.7-12V; Output: 5V regulated</td><td>Steps down voltage to regulated 5V for Arduino and all peripherals</td></tr>
+  </tbody>
+</table>
+
+<h3>2.2 Controller (1 item)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Specification</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Arduino Uno</td>
+      <td>ATmega328P, 16 MHz, 14 digital + 6 analog pins</td>
+      <td>Central controller running sun tracking, sensor reading, pump control, and LCD display</td>
+    </tr>
+  </tbody>
+</table>
+
+<h3>2.3 Sensors (4 types, 7 units)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Qty</th><th>Pin(s)</th><th>Protocol</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>DS18B20</td><td>1</td><td>D2</td><td>1-Wire</td><td>Waterproof temp sensor; range -55 to +125 C; 12-bit resolution; needs 4.7k pull-up</td></tr>
+    <tr><td>DHT11</td><td>1</td><td>D3</td><td>Digital</td><td>Ambient temperature (0-50 C) and humidity (20-80% RH)</td></tr>
+    <tr><td>LDR</td><td>4</td><td>A1, A2, A3, A6</td><td>Analog</td><td>Light sensors in cross pattern with 1k voltage dividers for dual-axis sun tracking</td></tr>
+    <tr><td>Water Level Sensor</td><td>1</td><td>A0</td><td>Analog</td><td>Detects water level; LOW &lt;200, OK 200-299, FULL &ge;300</td></tr>
+  </tbody>
+</table>
+
+<h3>2.4 Actuators (3 types, 4 units)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Qty</th><th>Pin</th><th>Signal</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Pan Servo (SG90)</td><td>1</td><td>D9</td><td>PWM</td><td>Horizontal sun tracking; range 45-135 degrees; 1-degree steps</td></tr>
+    <tr><td>Tilt Servo (SG90)</td><td>1</td><td>D10</td><td>PWM</td><td>Vertical sun tracking; range 45-135 degrees; 1-degree steps</td></tr>
+    <tr><td>Relay Module + Water Pump</td><td>1+1</td><td>D4</td><td>Digital (Active LOW)</td><td>Relay controls DC submersible pump for water circulation</td></tr>
+  </tbody>
+</table>
+
+<h3>2.5 Display (1 item)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Pin(s)</th><th>Protocol</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>I2C LCD 16x2 (PCF8574)</td><td>A4 (SDA), A5 (SCL)</td><td>I2C, address 0x27</td><td>Alternating display: Page 1 = Water Temp + Level; Page 2 = Ambient + Servo Angles</td></tr>
+  </tbody>
+</table>
+
+<h3>2.6 Heating Circuit — Separate 12V Supply (3 items)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Specification</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>12V DC Power Supply</td><td>Dedicated adapter or battery</td><td>Powers heating element only; separate from solar/LM2596 circuit; common GND with Arduino</td></tr>
+    <tr><td>ON/OFF Switch</td><td>Toggle switch or MOSFET</td><td>Manual control in series with +12V line to heater</td></tr>
+    <tr><td>12V Heating Element</td><td>Nichrome or ceramic, 12V DC</td><td>Immersed in water tank for supplemental heating when solar is insufficient</td></tr>
+  </tbody>
+</table>
+
+<h3>2.7 Passive Components (5 resistors)</h3>
+<table>
+  <thead>
+    <tr><th>Component</th><th>Qty</th><th>Function</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>4.7k ohm Resistor</td><td>1</td><td>Pull-up for DS18B20 1-Wire data bus (between D2 and 5V)</td></tr>
+    <tr><td>1k ohm Resistor</td><td>4</td><td>Voltage divider for each LDR (between analog midpoint and GND)</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  3. ARDUINO PIN MAPPING                                      -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>3. Arduino Pin Mapping</h2>
+
+<table>
+  <thead>
+    <tr><th>Pin</th><th>Component</th><th>Signal Type</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>D2</td><td>DS18B20 Water Temp Sensor</td><td>1-Wire Data</td><td>4.7k pull-up to 5V required</td></tr>
+    <tr><td>D3</td><td>DHT11 Ambient Temp/Humidity</td><td>Digital Data</td><td>—</td></tr>
+    <tr><td>D4</td><td>Relay Module (Water Pump)</td><td>Digital OUT</td><td>Active LOW</td></tr>
+    <tr><td>D9</td><td>Pan Servo (SG90)</td><td>PWM</td><td>Horizontal tracking, 45-135 degrees</td></tr>
+    <tr><td>D10</td><td>Tilt Servo (SG90)</td><td>PWM</td><td>Vertical tracking, 45-135 degrees</td></tr>
+    <tr><td>A0</td><td>Water Level Sensor</td><td>Analog IN</td><td>Threshold: LOW &lt;200, FULL &ge;300</td></tr>
+    <tr><td>A1</td><td>LDR — Top Left</td><td>Analog IN</td><td>1k voltage divider to GND</td></tr>
+    <tr><td>A2</td><td>LDR — Top Right</td><td>Analog IN</td><td>1k voltage divider to GND</td></tr>
+    <tr><td>A3</td><td>LDR — Bottom Left</td><td>Analog IN</td><td>1k voltage divider to GND</td></tr>
+    <tr><td>A4</td><td>LCD — SDA (I2C)</td><td>I2C Data</td><td>PCF8574 backpack, address 0x27</td></tr>
+    <tr><td>A5</td><td>LCD — SCL (I2C)</td><td>I2C Clock</td><td>—</td></tr>
+    <tr><td>A6</td><td>LDR — Bottom Right</td><td>Analog IN</td><td>1k voltage divider to GND</td></tr>
+    <tr><td>5V</td><td>All sensors, LCD, relay, servos, LDRs</td><td>Power</td><td>From LM2596 regulated output</td></tr>
+    <tr><td>GND</td><td>All components</td><td>Ground</td><td>Common GND shared with 12V heating circuit</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  4. SOLAR POWER CHAIN                                        -->
+<!-- ============================================================ -->
+<h2>4. Solar Power Chain</h2>
+
+<table>
+  <thead>
+    <tr><th>Stage</th><th>Component</th><th>Input</th><th>Output</th><th>Notes</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>Solar Panel 1 (6V)</td><td>Sunlight</td><td>+6V</td><td>In series with Panel 2</td></tr>
+    <tr><td>2</td><td>Solar Panel 2 (6V)</td><td>Sunlight</td><td>Combined +12V</td><td>(-) of Panel 1 connects to (+) of Panel 2</td></tr>
+    <tr><td>3</td><td>18650 Charging Module</td><td>~12V from panels</td><td>Regulated charge</td><td>Overcharge/discharge protection</td></tr>
+    <tr><td>4</td><td>18650 Li-ion Battery</td><td>From charger</td><td>3.7V nominal</td><td>Energy storage for night/cloudy conditions</td></tr>
+    <tr><td>5</td><td>LM2596 Buck Converter</td><td>3.7-12V</td><td>5V regulated</td><td>Adjustable via potentiometer</td></tr>
+    <tr><td>6</td><td>Arduino Uno (5V pin)</td><td>5V from LM2596</td><td>—</td><td>Powers entire control circuit</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  5. SOFTWARE                                                 -->
+<!-- ============================================================ -->
+<h2>5. Software and Libraries</h2>
+
+<h3>5.1 Arduino Libraries</h3>
+<table>
+  <thead>
+    <tr><th>Library</th><th>Author</th><th>Purpose</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Servo.h</td><td>Built-in (Arduino)</td><td>PWM control for pan and tilt servo motors</td></tr>
+    <tr><td>Wire.h</td><td>Built-in (Arduino)</td><td>I2C communication for LCD display</td></tr>
+    <tr><td>DHT.h</td><td>Adafruit</td><td>Read temperature and humidity from DHT11</td></tr>
+    <tr><td>OneWire.h</td><td>Paul Stoffregen</td><td>1-Wire protocol for DS18B20 communication</td></tr>
+    <tr><td>DallasTemperature.h</td><td>Miles Burton</td><td>High-level interface for DS18B20 temperature readings</td></tr>
+  </tbody>
+</table>
+
+<h3>5.2 Arduino Sketches</h3>
+<table>
+  <thead>
+    <tr><th>#</th><th>File</th><th>Purpose</th><th>Description</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td>solar_thermal_system.ino</td><td>Main System</td><td>Full integrated system — sun tracking, sensors, pump control, LCD display</td></tr>
+    <tr><td>2</td><td>solar_no_pump.ino</td><td>No-Pump Variant</td><td>Same as main but without water pump relay control</td></tr>
+    <tr><td>3</td><td>sensor_test.ino</td><td>Sensor Testing</td><td>Tests LCD, DS18B20, DHT11, and water level sensor with Serial output</td></tr>
+    <tr><td>4</td><td>pump_test.ino</td><td>Pump Testing</td><td>Simple relay ON/OFF test (5s cycles) to verify pump wiring</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  6. SYSTEM WORKFLOW                                          -->
+<!-- ============================================================ -->
+<div class="page-break"></div>
+<h2>6. System Workflow</h2>
+
+<div class="step">
+  <h3>Step 1: Solar Energy Harvesting</h3>
+  <p>Two 6V solar panels connected in series produce a combined 12V DC output. This feeds into the 18650 battery charging module which charges the Li-ion battery with overcharge/discharge protection.</p>
+  <p class="chips">Components: Solar Panel 1, Solar Panel 2, 18650 Charging Module, 18650 Battery</p>
+</div>
+
+<div class="step">
+  <h3>Step 2: Voltage Regulation</h3>
+  <p>The LM2596 buck converter steps down the battery/charger output (3.7-12V) to a regulated 5V DC. This stable 5V powers the Arduino Uno and all connected sensors, servos, relay, and LCD display.</p>
+  <p class="chips">Components: LM2596 Buck Converter, Arduino Uno</p>
+</div>
+
+<div class="step">
+  <h3>Step 3: Dual-Axis Sun Tracking (every 100ms)</h3>
+  <p>Four LDRs arranged in a cross pattern (Top-Left, Top-Right, Bottom-Left, Bottom-Right) detect sunlight direction. The Arduino calculates error signals:</p>
+  <p><b>Horizontal Error</b> = (TL + BL) - (TR + BR) → adjusts Pan Servo on D9</p>
+  <p><b>Vertical Error</b> = (TL + TR) - (BL + BR) → adjusts Tilt Servo on D10</p>
+  <p>If error exceeds the tolerance threshold (50 units), the corresponding servo moves by 1 degree. In darkness (all LDRs below 80), servos return to 90 degree home position.</p>
+  <p class="chips">Components: 4x LDR, 4x 1k Resistors, Pan Servo (SG90), Tilt Servo (SG90)</p>
+</div>
+
+<div class="step">
+  <h3>Step 4: Water Temperature Monitoring (every 1 second)</h3>
+  <p>The DS18B20 waterproof sensor measures water temperature inside the cooking vessel at 12-bit resolution. Temperature readings are displayed on the LCD and can trigger safety logic.</p>
+  <p class="chips">Components: DS18B20, 4.7k Pull-up Resistor</p>
+</div>
+
+<div class="step">
+  <h3>Step 5: Ambient Monitoring (every 2 seconds)</h3>
+  <p>The DHT11 sensor reads ambient air temperature and humidity around the cooking system. This data helps assess environmental conditions and system efficiency.</p>
+  <p class="chips">Components: DHT11</p>
+</div>
+
+<div class="step">
+  <h3>Step 6: Water Level Check (continuous)</h3>
+  <p>An analog water level sensor on A0 continuously checks the water level. Status is categorized as: LOW (below 200) — needs refilling; OK (200 to 299) — normal; FULL (300 and above) — tank full.</p>
+  <p class="chips">Components: Water Level Sensor</p>
+</div>
+
+<div class="step">
+  <h3>Step 7: Water Circulation (pump control)</h3>
+  <p>The relay module (Active LOW on D4) controls the DC submersible water pump. The pump circulates water through the solar thermal collector to maximize heat absorption. Pump test mode runs 5-second ON / 5-second OFF duty cycles.</p>
+  <p class="chips">Components: Relay Module, Water Pump</p>
+</div>
+
+<div class="step">
+  <h3>Step 8: LCD Display Output (every 3 seconds, alternating pages)</h3>
+  <p>The I2C LCD 16x2 alternates between two information pages every 3 seconds:</p>
+  <p><b>Page 1:</b> Water Temperature (degrees C) + Water Level Status (LOW/OK/FULL)</p>
+  <p><b>Page 2:</b> Ambient Temperature, Humidity (%), Pan Servo Angle, Tilt Servo Angle</p>
+  <p class="chips">Components: I2C LCD 16x2 (PCF8574)</p>
+</div>
+
+<div class="step">
+  <h3>Step 9: Supplemental Heating (separate 12V circuit)</h3>
+  <p>When solar energy alone is insufficient, a 12V heating element (nichrome/ceramic) immersed in the water tank provides supplemental heating. It is powered by a dedicated 12V DC power supply (completely separate from the solar circuit), controlled via a manual ON/OFF switch. The GND is shared (common) with the Arduino circuit.</p>
+  <p class="chips">Components: 12V DC PSU, ON/OFF Switch, Heating Element</p>
+</div>
+
+<!-- ============================================================ -->
+<!--  7. TASK TIMING                                              -->
+<!-- ============================================================ -->
+<hr>
+<h2>7. Task Timing Summary</h2>
+
+<table>
+  <thead>
+    <tr><th>Task</th><th>Interval</th><th>Function Name</th><th>Components Involved</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Sun Tracking</td><td>100 ms</td><td>trackSun()</td><td>4x LDR → Pan and Tilt Servos</td></tr>
+    <tr><td>Water Temperature</td><td>1,000 ms</td><td>readWaterTemp()</td><td>DS18B20</td></tr>
+    <tr><td>Ambient Reading</td><td>2,000 ms</td><td>readAmbient()</td><td>DHT11</td></tr>
+    <tr><td>LCD Page Flip</td><td>3,000 ms</td><td>flipLCD()</td><td>LCD 16x2</td></tr>
+  </tbody>
+</table>
+
+<!-- ============================================================ -->
+<!--  FOOTER                                                      -->
+<!-- ============================================================ -->
+<hr>
+<p style="text-align: center; font-size: 10px; color: #999; margin-top: 12px;">
+  AI Solar Thermal Cooking System — Component List and Workflow Documentation<br>
+  To save as PDF: Press Ctrl+P (Windows) or Cmd+P (Mac) → Select "Save as PDF" → Click Save
+</p>
+
+</body>
+</html>
